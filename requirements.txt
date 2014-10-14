@@ -1,0 +1,2 @@
+Django==1.7
+git+git://github.com/samuraisam/django-json-rpc.git
