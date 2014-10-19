@@ -17,14 +17,15 @@ class Lock(models.Model):
     def __unicode__(self):
         return u'{}'.format(self.stub)
 
-    def lock(self, user=None):
+    def lock(self, user=None, exclusive=False):
         if self.locked:
-            if self.owner == user and self.multilock == True:
+            if self.owner == user and self.multilock == True and exclusive == False:
                 return
             else:
                 raise Exception("Lock already locked")
 
         self.locked = True
+        if exclusive: self.multilock = False
         if user: self.owner = user
         self.save()
 
@@ -32,5 +33,6 @@ class Lock(models.Model):
         if self.owner and user != self.owner:
             raise Exception("Not allowed to unlock resource")
         self.locked = False
+        self.multilock = True
         self.owner = None
         self.save()# Create your models here.

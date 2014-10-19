@@ -34,12 +34,13 @@ class LockDetail(DetailView):
 
 # RPC calls
 @jsonrpc_method('locksmith.lock', authenticated=True)
-def lock(request, lock_name):
+def lock(request, lock_name, exclusive=False):
     try:
         l = Lock.objects.get(stub=lock_name)
-        l.lock(user=request.user)
+        l.lock(user=request.user, exclusive=exclusive)
     except Lock.DoesNotExist:
-        l = Lock(stub=lock_name, locked=True, owner = request.user)
+        l = Lock(stub=lock_name, locked=True, owner = request.user,
+                multilock= not exclusive)
         l.save()
 
     return serializers.serialize('json', [ l ], fields=('locked', 'stub',
